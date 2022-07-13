@@ -1,4 +1,7 @@
 *.pyc
 *.vscode
 data/
+<<<<<<< HEAD
 data
+=======
+>>>>>>> 7b39ada4a065283b123a562884832fb241a67310

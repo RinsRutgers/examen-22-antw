@@ -6,9 +6,10 @@ from typing import Any, Callable, Dict, Iterator, List, Optional, Sequence, Tupl
 
 import numpy as np
 import pandas as pd
+import tifffile
+
 from loguru import logger
 
-# import tifffile
 from tqdm import tqdm
 
 from src.typehinting import DictDataset, ListDataset
@@ -138,8 +139,8 @@ class EuroSatDataset(BaseDictDataset):
         super().__init__(paths)
 
     def __len__(self) -> int:
-        # TODO ~ about one - two lines of code
-        raise NotImplementedError
+        return(len(self.paths))
+
 
     def process_data(self) -> None:
         for path in tqdm(self.paths):
@@ -152,9 +153,9 @@ class EuroSatDataset(BaseDictDataset):
             # the value is the current List of Paths
             # if there is no value for the key, return an empty List
             # TODO ~ finish these 2 lines of code below
-            key: int = None
-            value: np.ndarray = None
-
+            key: int = self.name_mapping[class_name]
+            value: np.ndarray = self.dataset.get(key, np.array([]))
+            # print(f"key: {key} value: {value}")
             # we append the new path to the values we already had
             self.dataset[key] = np.append(value, np.array([path]))
 
@@ -298,24 +299,23 @@ class SiameseStreamer(GenericStreamer):
         """
         batch: List = []
         (same, equal), (other, (i, j)) = self.random_index()
-
-        # retrieve the arrays with paths from the three classes:
-        #   - the equal class
-        #   - the different classes i and j
-        # TODO ~three lines of code
+        
+        equal_paths = self.dataset[equal]
+        i_paths =self.dataset[i]
+        j_paths = self.dataset[j]
 
         for idx in same:
-            # append to the batch a tuple (img1, img2, 1)
-            # use tifffile to read the image
-            # cast the image to np.int32
-            # TODO ~ 4 till 5 lines of code
+            img1 = np.int32(tifffile.imread(equal_paths[idx][0]))
+            img2 = np.int32(tifffile.imread(equal_paths[idx][1]))
+            same_class = (img1, img2, 1)
+            batch.append(same_class)
             self.index += 1
 
         for idx in other:
-            # append to the batch a tuple (img1, img2, 0)
-            # use tifffile to read the image
-            # cast the image to np.int32
-            # TODO ~ 4 till 5 lines of code
+            img1 = np.int32(tifffile.imread(i_paths[idx[0]]))
+            img2 = np.int32(tifffile.imread(j_paths[idx[1]]))
+            diff_class = (img1, img2, 1)
+            batch.append(diff_class)
             self.index += 1
 
         random.shuffle(batch)
