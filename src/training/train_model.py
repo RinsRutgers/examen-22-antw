@@ -165,7 +165,7 @@ def trainloop(
                 f"Epoch {epoch} train {train_loss:.4f} test {test_loss:.4f} metric {metric_scores}"  # noqa E501
             )
 
-    return model
+    return model, metric_scores
 
 
 def count_parameters(model: GenericModel) -> int:
