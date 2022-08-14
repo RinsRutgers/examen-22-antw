@@ -161,12 +161,11 @@ def trainloop(
             lr = [group["lr"] for group in optimizer_.param_groups][0]
             writer.add_scalar("learning_rate", lr, epoch)
             metric_scores = [f"{v:.4f}" for v in metric_dict.values()]
-            logger.info(
-                f"Epoch {epoch} train {train_loss:.4f} test {test_loss:.4f} metric {metric_scores}"  # noqa E501
-            )
+            # logger.info(
+            #     f"Epoch {epoch} train {train_loss:.4f} test {test_loss:.4f} metric {metric_scores}"  # noqa E501
+            # )
 
-    return model
-
+    return model, metric_scores[1]
 
 def count_parameters(model: GenericModel) -> int:
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
